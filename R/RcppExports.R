@@ -2,6 +2,11 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
+calKappa <- function(t1_genes, t2_genes, totalGeneCount) {
+    .Call('_RichStudio_calKappa', PACKAGE = 'RichStudio', t1_genes, t2_genes, totalGeneCount)
+}
+
+#' @export
 RcppKappaCluster <- function(myTerms, myGenes, kappaCutoff = 0.5) {
     .Call('_RichStudio_RcppKappaCluster', PACKAGE = 'RichStudio', myTerms, myGenes, kappaCutoff)
 }
