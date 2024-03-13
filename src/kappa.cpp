@@ -42,7 +42,8 @@ std::vector<std::string> splitString(const std::string& input, char delimiter) {
 }
 
 // Rcpp function to conjoin a vector into a comma-separated string
-std::string vecToString(const std::vector<std::string>& vec, char delimiter) {
+template<typename T>
+std::string vecToString(const std::vector<T>& vec, char delimiter) {
   if (vec.empty()) {
     return "";
   }
@@ -120,17 +121,16 @@ double calKappa(const std::vector<std::string> t1_genes, const std::vector<std::
   }
 }
 
-// std::unordered_map<std::string, std::vector<std::string>> termMembershipOverThreshold(
-//           std::vector<std::string> termVec,
-//           std::unordered_map<std::pair<std::string, std::string>, double, hash_pair> kappaScores) {
-//   double totalPairs = 0, goodPairs = 0;
-//   for (std::vector<std::string>::iterator t=termVec.begin(); t!=termVec.end(); ++t)
-//   {
-//     std::cout<<*t<<std::endl;
-//   }
-// }
-
-
+std::unordered_map<std::string, std::vector<std::string>> termMembershipOverThreshold(
+          std::string term,
+          std::vector<std::string> termVec,
+          std::unordered_map<std::pair<std::string, std::string>, double, hash_pair> kappaScores) {
+  double totalPairs = 0, goodPairs = 0;
+  for (std::vector<std::string>::iterator t=termVec.begin(); t!=termVec.end(); ++t)
+  {
+    std::cout<<*t<<std::endl;
+  }
+}
 
 std::unordered_map<std::string, std::vector<std::string>> createInitSeeds(
                     std::unordered_map<std::string, std::vector<std::string>> signifKappaTerms,
@@ -148,11 +148,15 @@ std::unordered_map<std::string, std::vector<std::string>> createInitSeeds(
 
 
 // Helper function to add an element to the end of the vector associated with a key
-// "SignifKappaTerms"
-void addTermToMap(std::unordered_map<std::string, std::vector<std::string>>& map,
-                  const std::string& key, const std::string& element) {
+// "SignifKappaTerms" = strMap, strElement are not null
+// "SignifKappaScores" = intMap, intElement are not null
+template <typename T>
+void addTermToMap(std::unordered_map<std::string, std::vector<T>>& map,
+                  const std::string& key, const T& element) {
+
+  // Adding term to SignifKappaTerms
   auto it = map.find(key);
-  std::vector<std::string> keyValue;
+  std::vector<T> keyValue;
   if (it != map.end()) {
     // Key exists, add the element to the existing vector
     keyValue = it->second;
@@ -163,23 +167,34 @@ void addTermToMap(std::unordered_map<std::string, std::vector<std::string>>& map
     keyValue = {element};
     map[key] = keyValue;
   }
+
 }
 
 
 // Temporary functions to test functionality of code
 // Function to convert std::unordered_map<std::string, std::vector<std::string>> to DataFrame
-DataFrame mapToDataFrame(const std::unordered_map<std::string, std::vector<std::string>>& map) {
+template <typename T>
+DataFrame mapToDataFrame(const std::unordered_map<std::string, std::vector<T>>& map=NULL,
+                         bool isTerm=true) {
   std::vector<std::string> keys;
   std::vector<std::string> values;
   std::string valueString;
 
-  for (const auto& entry : map) {
-    keys.push_back(entry.first);
-    valueString = vecToString(entry.second, ',');
-    values.push_back(valueString);
+  if (isTerm == true) {
+    for (const auto& entry : map) {
+      keys.push_back(entry.first);
+      valueString = vecToString(entry.second, ',');
+      values.push_back(valueString);
+    }
+    return DataFrame::create(_["Term"] = keys, _["Signif_TermPairs"] = values);
+  } else {
+    for (const auto& entry : map) {
+      keys.push_back(entry.first);
+      valueString = vecToString(entry.second, ',');
+      values.push_back(valueString);
+    }
+    return DataFrame::create(_["Term"] = keys, _["Pair_Kappas"] = values);
   }
-
-  return DataFrame::create(_["Key"] = keys, _["Values"] = values);
 }
 
 // Function to convert std::unordered_map<std::pair<std::string, std::string>, double> to DataFrame
@@ -205,6 +220,7 @@ List RcppKappaCluster(CharacterVector myTerms, CharacterVector myGenes,
                       double kappaCutoff = 0.5) {
   std::unordered_map<std::pair<std::string, std::string>, double, hash_pair> kappaScores;
   std::unordered_map<std::string, std::vector<std::string>> signifKappaTerms;
+  std::unordered_map<std::string, std::vector<double>> signifKappaScores;
 
   std::vector<std::string> term_vec = Rcpp::as<std::vector<std::string>>(myTerms);
   std::vector<std::string> gene_vec = Rcpp::as<std::vector<std::string>>(myGenes);
@@ -226,6 +242,7 @@ List RcppKappaCluster(CharacterVector myTerms, CharacterVector myGenes,
       // Add term pairs with kappa > kappaCutoff to signifKappaTerms
       if (kappa >= kappaCutoff) {
         addTermToMap(signifKappaTerms, term_vec[i], term_vec[j]);
+        addTermToMap(signifKappaScores, term_vec[i], kappa);
         //std::string result = "term 1: " + *term1 + ", term 2: " + *term2 + ", kappa: " + std::to_string(kappa);
         //std::cout << result << std::endl;
       }
@@ -233,9 +250,10 @@ List RcppKappaCluster(CharacterVector myTerms, CharacterVector myGenes,
   }
 
   // Convert std::unordered_map to DataFrame
-  DataFrame dfSignifKappaTerms = mapToDataFrame(signifKappaTerms);
+  DataFrame dfSignifKappaTerms = mapToDataFrame(signifKappaTerms, true);
+  DataFrame dfSignifKappaScores = mapToDataFrame(signifKappaScores, false);
   DataFrame dfKappaScores = pairMapToDataFrame(kappaScores);
 
   // Return a List containing DataFrames
-  return List::create(_["SignifKappaTerms"] = dfSignifKappaTerms, _["KappaScores"] = dfKappaScores);
+  return List::create(_["SignifKappaTerms"] = dfSignifKappaTerms, _["SignifKappaScores"] = dfSignifKappaScores, _["KappaScores"] = dfKappaScores);
 }
