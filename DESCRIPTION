@@ -21,9 +21,9 @@ Imports:
     heatmaply,
     DT,
     stringdist,
-    shinyjqui,
     richR,
     bioAnno,
+    shinyjqui,
     shinyWidgets
 License: What license is it under?
 Encoding: UTF-8

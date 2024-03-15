@@ -11,9 +11,18 @@ test_that("RcppKappaCluster returns expected output", {
 
   # Call the RcppKappaCluster function
   result <- RichStudio::RcppKappaCluster(merge$Term, merge$GeneID)
-  print(length(unique(unlist(strsplit(merge$GeneID, ","))))) # Try to count numGenes
 
-  # testTissueDev <- RichStudio::calKappa()
+  # Test the second version of it!
+  result2 <- RichStudio::RcppKappaCluster2(merge$Term, merge$GeneID, merge$Padj)
+
+  # View files in window
+  View(result[["SignifKappaTerms"]])
+  View(result[["SignifKappaScores"]])
+  View(result[["KappaScores"]])
+
+  View(result2[["dfSigTermIndices"]])
+  View(result2[["all_kappas"]])
+  View(result2[["AllKappaMatrix"]])
 
   # Compare to richR
   richRresult <- richR::richCluster(x=merge, gene=TRUE, cutoff=0.5, overlap=0.5, minSize=2)
