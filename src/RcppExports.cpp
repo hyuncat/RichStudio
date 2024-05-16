@@ -10,17 +10,17 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// RcppKappaCluster2
-List RcppKappaCluster2(CharacterVector myTerms, CharacterVector myGenes, NumericVector myPvalues, double kappaCutoff);
-RcppExport SEXP _RichStudio_RcppKappaCluster2(SEXP myTermsSEXP, SEXP myGenesSEXP, SEXP myPvaluesSEXP, SEXP kappaCutoffSEXP) {
+// KappaSimilarityMatrix
+Rcpp::List KappaSimilarityMatrix(Rcpp::CharacterVector myTerms, Rcpp::CharacterVector myGenes, Rcpp::NumericVector myPvalues, double kappaCutoff);
+RcppExport SEXP _RichStudio_KappaSimilarityMatrix(SEXP myTermsSEXP, SEXP myGenesSEXP, SEXP myPvaluesSEXP, SEXP kappaCutoffSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< CharacterVector >::type myTerms(myTermsSEXP);
-    Rcpp::traits::input_parameter< CharacterVector >::type myGenes(myGenesSEXP);
-    Rcpp::traits::input_parameter< NumericVector >::type myPvalues(myPvaluesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type myTerms(myTermsSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type myGenes(myGenesSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type myPvalues(myPvaluesSEXP);
     Rcpp::traits::input_parameter< double >::type kappaCutoff(kappaCutoffSEXP);
-    rcpp_result_gen = Rcpp::wrap(RcppKappaCluster2(myTerms, myGenes, myPvalues, kappaCutoff));
+    rcpp_result_gen = Rcpp::wrap(KappaSimilarityMatrix(myTerms, myGenes, myPvalues, kappaCutoff));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -36,7 +36,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RichStudio_RcppKappaCluster2", (DL_FUNC) &_RichStudio_RcppKappaCluster2, 4},
+    {"_RichStudio_KappaSimilarityMatrix", (DL_FUNC) &_RichStudio_KappaSimilarityMatrix, 4},
     {"_RichStudio_rcpp_hello", (DL_FUNC) &_RichStudio_rcpp_hello, 0},
     {NULL, NULL, 0}
 };
