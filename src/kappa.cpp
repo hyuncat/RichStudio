@@ -38,9 +38,9 @@ double getKappa(const std::unordered_set<std::string>& t1_genes, const std::unor
   double unique = totalGeneCount - common - t1_only - t2_only; // Count of all genes not found in either term
 
   double relative_observed_agree = (common + unique) / totalGeneCount;
-  double chance_yes = ((common + t1_only) / totalGeneCount) + ((common + t2_only) / totalGeneCount);
-  double chance_no = ((unique + t1_only) / totalGeneCount) + ((unique + t2_only) / totalGeneCount);
-  double chance_agree = chance_yes * chance_no;
+  double chance_yes = ((common + t1_only) / totalGeneCount) * ((common + t2_only) / totalGeneCount);
+  double chance_no = ((unique + t1_only) / totalGeneCount) * ((unique + t2_only) / totalGeneCount);
+  double chance_agree = chance_yes + chance_no;
 
   if (chance_agree == 1) {
     return 0.0; // Prevent divide by zero
