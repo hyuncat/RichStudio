@@ -42,7 +42,8 @@ ui <- function(request) {
         menuSubItem("Visualize", icon=icon("dna"), tabName="rr_visualize_tab")
       ),
       menuItem("Clustering", icon=icon("layer-group"), tabName="cluster_tab_group",
-        menuSubItem("Cluster", icon=icon("upload"), tabName="cluster_tab"),
+        menuSubItem("Upload files", icon=icon("upload"), tabName="cluster_upload_tab"),
+        menuSubItem("Cluster", icon=icon("vials"), tabName="cluster_tab"),
         menuSubItem("Visualize", icon=icon("layer-group"), tabName="clus_visualize_tab")
       ),
       menuItem("Save", icon=icon("save"), tabName="save_tab"),
@@ -55,6 +56,7 @@ ui <- function(request) {
       homeTabUI("home", tabName="home_tab"),
       enrichTabUI("enrich", tabName="enrich_tab"),
       rrVisTabUI("rr_visualize", tabName="rr_visualize_tab"),
+      clusterUploadTabUI("cluster_upload", tabName="cluster_upload_tab"),
       clusterTabUI("cluster", tabName="cluster_tab"),
       clusVisTabUI("clus_visualize", tabName="clus_visualize_tab"),
       saveTabUI("save", tabName="save_tab")
@@ -90,6 +92,7 @@ server <- function(input, output, session) {
   u_clusdfs <- reactiveValues()  # cluster result dataframes
   u_big_clusdf <- reactiveValues() # list of created cluster results with info
   u_cluslists <- reactiveValues()  # cluster info lists
+  clus_intermed <- reactiveValues() # cluster intermediate results (kappa similarity matrix, etc.)
 
   # Server logic
   homeTabServer("home")
@@ -99,9 +102,12 @@ server <- function(input, output, session) {
                   u_rrnames=u_rrnames, u_rrdfs=u_rrdfs, u_big_rrdf=u_big_rrdf,
                   u_clusnames=u_clusnames, u_clusdfs=u_clusdfs, u_cluslists=u_cluslists)
   #uploadRichTabServer()
-  clusterTabServer("cluster", u_degnames=u_degnames, u_degdfs=u_degdfs,
+  clusterUploadTabServer("cluster_upload", u_degnames=u_degnames, u_degdfs=u_degdfs,
                    u_rrnames=u_rrnames, u_rrdfs=u_rrdfs, u_big_rrdf=u_big_rrdf,
                    u_clusnames=u_clusnames, u_clusdfs=u_clusdfs, u_big_clusdf=u_big_clusdf, u_cluslists=u_cluslists)
+  clusterTabServer("cluster", u_degnames=u_degnames, u_degdfs=u_degdfs,
+                   u_rrnames=u_rrnames, u_rrdfs=u_rrdfs, u_big_rrdf=u_big_rrdf,
+                   u_clusnames=u_clusnames, u_clusdfs=u_clusdfs, u_big_clusdf=u_big_clusdf, u_cluslists=u_cluslists, clus_intermed=clus_intermed)
   clusVisTabServer("clus_visualize", u_degnames=u_degnames, u_degdfs=u_degdfs,
                    u_rrnames=u_rrnames, u_rrdfs=u_rrdfs, u_big_rrdf=u_big_rrdf,
                    u_clusnames=u_clusnames, u_clusdfs=u_clusdfs, u_big_clusdf=u_big_clusdf, u_cluslists=u_cluslists)

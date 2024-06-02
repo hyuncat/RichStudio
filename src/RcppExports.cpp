@@ -10,34 +10,24 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
-// KappaSimilarityMatrix
-Rcpp::List KappaSimilarityMatrix(Rcpp::CharacterVector myTerms, Rcpp::CharacterVector myGenes, Rcpp::NumericVector myPvalues, double kappaCutoff);
-RcppExport SEXP _RichStudio_KappaSimilarityMatrix(SEXP myTermsSEXP, SEXP myGenesSEXP, SEXP myPvaluesSEXP, SEXP kappaCutoffSEXP) {
+// RichCluster
+Rcpp::List RichCluster(std::string distanceMetric, double distanceCutoff, Rcpp::CharacterVector termNameColumn, Rcpp::CharacterVector geneIDColumn, Rcpp::NumericVector PvalueColumn);
+RcppExport SEXP _RichStudio_RichCluster(SEXP distanceMetricSEXP, SEXP distanceCutoffSEXP, SEXP termNameColumnSEXP, SEXP geneIDColumnSEXP, SEXP PvalueColumnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type myTerms(myTermsSEXP);
-    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type myGenes(myGenesSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type myPvalues(myPvaluesSEXP);
-    Rcpp::traits::input_parameter< double >::type kappaCutoff(kappaCutoffSEXP);
-    rcpp_result_gen = Rcpp::wrap(KappaSimilarityMatrix(myTerms, myGenes, myPvalues, kappaCutoff));
-    return rcpp_result_gen;
-END_RCPP
-}
-// rcpp_hello
-List rcpp_hello();
-RcppExport SEXP _RichStudio_rcpp_hello() {
-BEGIN_RCPP
-    Rcpp::RObject rcpp_result_gen;
-    Rcpp::RNGScope rcpp_rngScope_gen;
-    rcpp_result_gen = Rcpp::wrap(rcpp_hello());
+    Rcpp::traits::input_parameter< std::string >::type distanceMetric(distanceMetricSEXP);
+    Rcpp::traits::input_parameter< double >::type distanceCutoff(distanceCutoffSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type termNameColumn(termNameColumnSEXP);
+    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type geneIDColumn(geneIDColumnSEXP);
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type PvalueColumn(PvalueColumnSEXP);
+    rcpp_result_gen = Rcpp::wrap(RichCluster(distanceMetric, distanceCutoff, termNameColumn, geneIDColumn, PvalueColumn));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RichStudio_KappaSimilarityMatrix", (DL_FUNC) &_RichStudio_KappaSimilarityMatrix, 4},
-    {"_RichStudio_rcpp_hello", (DL_FUNC) &_RichStudio_rcpp_hello, 0},
+    {"_RichStudio_RichCluster", (DL_FUNC) &_RichStudio_RichCluster, 5},
     {NULL, NULL, 0}
 };
 
