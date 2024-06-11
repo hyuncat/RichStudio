@@ -17,8 +17,25 @@ clusterTabUI <- function(id, tabName) {
           selectInput(ns('similarity_metric'), "Choose a similarity metric to cluster terms by", c("Kappa Score"="kappa")),
         ), column(width = 6,
           h4("Similarity cutoff"),
-          numericInput(ns('similarity_cutoff'), "Set the minimum similarity value to cluster by", value=.5, min=0, max=1),
+          numericInput(ns('similarity_cutoff'), "Set the minimum similarity value to create initial SeedMap from", value=.5, min=0, max=1),
       )),
+      fluidRow(
+        column(width = 4,
+               h4("Merging criteria"),
+               selectInput(ns('merge_strategy'), 
+                           "Choose a merging strategy to cluster terms by", 
+                           c("DAVID"="david")),
+        ), 
+        column(width = 4,
+               h4("Membership method"),
+               selectInput(ns('membership_strategy'), 
+                           "Choose a membership method to define how cluster intrasimilarity should be defined", 
+                           c("Multiple linkage"="multiple_linkage")),
+        ),
+        column(width = 4,
+                  h4("Membership cutoff"),
+                  numericInput(ns('membership_cutoff'), "Set the minimum similarity value to cluster by", value=.5, min=0, max=1),
+        )),
       h4("Minimum cluster size"),
       numericInput(ns('min_size'), "At least how many terms should be in each cluster?", value=2, min=0),
       actionButton(ns('cluster'), "Cluster")
@@ -30,11 +47,11 @@ clusterTabUI <- function(id, tabName) {
           p("Stuff goes here..."),
           DT::DTOutput(ns('distanceMatrix_table'))
         ),
-        tabPanel(title="ClusterMap",
+        tabPanel(title="SeedMap",
           p("Where all indices associated with a particular key represent another term which has a kappa score >= 0.50 with the key."),
           DT::DTOutput(ns('clusterMap_table'))
         ),
-        tabPanel(title="InitialSeeds",
+        tabPanel(title="FilteredSeeds",
           p("Some logic is off here..."),
           DT::DTOutput(ns('InitialSeeds_table'))
         ),
@@ -103,8 +120,9 @@ clusterTabServer <- function(id, u_degnames, u_degdfs, u_rrnames, u_rrdfs, u_big
         merged_gs <- merge_genesets(genesets)
         incProgress(0.2, message=NULL, "Done merging")
         cluster_intermediate_tmp <- tryCatch(
-          RichStudio::RichCluster(input$similarity_metric, input$similarity_cutoff, merged_gs$Term, 
-                                  merged_gs$GeneID, merged_gs$Padj),
+          RichStudio::RichCluster(input$similarity_metric, input$similarity_cutoff,
+                                  input$membership_strategy, input$membership_cutoff,
+                                  merged_gs$Term, merged_gs$GeneID, merged_gs$Padj),
           error = function(e) {
             showNotification(e$message)
             return(NULL)
@@ -129,14 +147,14 @@ clusterTabServer <- function(id, u_degnames, u_degdfs, u_rrnames, u_rrdfs, u_big
     )
 
     clusterMap_toTable <- reactive({
-      clus_intermed[['ClusterMap']]
+      clus_intermed[['SeedMap']]
     })
     output$clusterMap_table = DT::renderDT(
       clusterMap_toTable()
     )
 
     InitialSeeds_toTable <- reactive({
-      clus_intermed[['InitialSeeds']]
+      clus_intermed[['FilteredSeeds']]
     })
     output$InitialSeeds_table = DT::renderDT(
       InitialSeeds_toTable()

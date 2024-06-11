@@ -2,7 +2,7 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 #' @export
-RichCluster <- function(distanceMetric, distanceCutoff, termNameColumn, geneIDColumn, PvalueColumn) {
-    .Call('_RichStudio_RichCluster', PACKAGE = 'RichStudio', distanceMetric, distanceCutoff, termNameColumn, geneIDColumn, PvalueColumn)
+RichCluster <- function(distanceMetric, distanceCutoff, mergeStrategy, membershipCutoff, termNameColumn, geneIDColumn, PvalueColumn) {
+    .Call('_RichStudio_RichCluster', PACKAGE = 'RichStudio', distanceMetric, distanceCutoff, mergeStrategy, membershipCutoff, termNameColumn, geneIDColumn, PvalueColumn)
 }
 

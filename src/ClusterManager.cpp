@@ -1,9 +1,12 @@
-#include "ClusterManager.h"
 #include <Rcpp.h>
+
+#include "ClusterManager.h"
+#include "ClusterList.h"
 #include "StringUtils.h"
 #include "DistanceMetric.h"
 #include <stdexcept>
 
+/* old bad way
 ClusterManager::ClusterManager(Rcpp::CharacterVector termNameColumn,
                                Rcpp::CharacterVector geneIDColumn,
                                Rcpp::NumericVector PvalueColumn)
@@ -17,10 +20,30 @@ ClusterManager::ClusterManager(Rcpp::CharacterVector termNameColumn,
   _Pvalues(
     Rcpp::as<std::vector<double>>(PvalueColumn)
   ),
-  // Initialize distanceMatrix and clusterMap with vector info
+  // Initialize distanceMatrix and seedMap with vector info
   _nterms(_termNames.size()),
   distanceMatrix(_nterms, _termNames),
-  clusterMap(&_termNames, &_geneIDstrings, &_Pvalues)
+  seedMap(&_termNames, &_geneIDstrings, &_Pvalues)
+{
+  // Ensure all vectors are of the same size
+  if (_termNames.size() != _geneIDstrings.size() || _termNames.size() != _Pvalues.size()) {
+    throw std::invalid_argument("All input columns must have the same size.");
+  }
+}
+*/
+
+// new way with initializing ClusterList and filteringSeeds separately
+ClusterManager::ClusterManager(Rcpp::CharacterVector termNameColumn,
+                               Rcpp::CharacterVector geneIDColumn,
+                               Rcpp::NumericVector PvalueColumn)
+  // Store as C++ vectors
+  : _termNames(Rcpp::as<std::vector<std::string>>(termNameColumn)),
+    _geneIDstrings(Rcpp::as<std::vector<std::string>>(geneIDColumn)),
+    _Pvalues(Rcpp::as<std::vector<double>>(PvalueColumn)),
+    _nterms(_termNames.size()), 
+    distanceMatrix(_nterms, _termNames), 
+    seedMap(&_termNames, &_geneIDstrings, &_Pvalues), 
+    clusterList(seedMap, distanceMatrix) // fix later
 {
   // Ensure all vectors are of the same size
   if (_termNames.size() != _geneIDstrings.size() || _termNames.size() != _Pvalues.size()) {
@@ -33,7 +56,7 @@ void ClusterManager::calculateDistanceScores(DistanceMetric distanceMetric) {
 
   int totalGeneCount = StringUtils::countUniqueElements(_geneIDstrings);
 
-  // Fill distanceMatrix and initialize clusterMap with calculated distances
+  // Fill distanceMatrix and initialize seedMap with calculated distances
   for (int i=0; i<_nterms; ++i)
   {
     std::unordered_set<std::string> term1_genes = StringUtils::splitStringToUnorderedSet(_geneIDstrings[i], ",");
@@ -51,7 +74,7 @@ void ClusterManager::calculateDistanceScores(DistanceMetric distanceMetric) {
         distanceMatrix.setDistance(distanceScore, i, j);
 
         if (distanceScore >= distanceMetric.getDistanceCutoff()) {
-          clusterMap.addTermPair(i, j);
+          seedMap.addTermPair(i, j);
 
           // Print distance score information
           std::cout << distanceMetric.getDistanceMethod() << " for (" << _termNames[i] << ", ";
@@ -63,4 +86,9 @@ void ClusterManager::calculateDistanceScores(DistanceMetric distanceMetric) {
       }
     }
   }
+}
+
+
+void ClusterManager::filterSeeds(MergeStrategy mergeStrategy) {
+  clusterList.filterSeeds(mergeStrategy);
 }

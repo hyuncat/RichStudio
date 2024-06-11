@@ -11,23 +11,25 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
 // RichCluster
-Rcpp::List RichCluster(std::string distanceMetric, double distanceCutoff, Rcpp::CharacterVector termNameColumn, Rcpp::CharacterVector geneIDColumn, Rcpp::NumericVector PvalueColumn);
-RcppExport SEXP _RichStudio_RichCluster(SEXP distanceMetricSEXP, SEXP distanceCutoffSEXP, SEXP termNameColumnSEXP, SEXP geneIDColumnSEXP, SEXP PvalueColumnSEXP) {
+Rcpp::List RichCluster(std::string distanceMetric, double distanceCutoff, std::string mergeStrategy, double membershipCutoff, Rcpp::CharacterVector termNameColumn, Rcpp::CharacterVector geneIDColumn, Rcpp::NumericVector PvalueColumn);
+RcppExport SEXP _RichStudio_RichCluster(SEXP distanceMetricSEXP, SEXP distanceCutoffSEXP, SEXP mergeStrategySEXP, SEXP membershipCutoffSEXP, SEXP termNameColumnSEXP, SEXP geneIDColumnSEXP, SEXP PvalueColumnSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< std::string >::type distanceMetric(distanceMetricSEXP);
     Rcpp::traits::input_parameter< double >::type distanceCutoff(distanceCutoffSEXP);
+    Rcpp::traits::input_parameter< std::string >::type mergeStrategy(mergeStrategySEXP);
+    Rcpp::traits::input_parameter< double >::type membershipCutoff(membershipCutoffSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type termNameColumn(termNameColumnSEXP);
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type geneIDColumn(geneIDColumnSEXP);
     Rcpp::traits::input_parameter< Rcpp::NumericVector >::type PvalueColumn(PvalueColumnSEXP);
-    rcpp_result_gen = Rcpp::wrap(RichCluster(distanceMetric, distanceCutoff, termNameColumn, geneIDColumn, PvalueColumn));
+    rcpp_result_gen = Rcpp::wrap(RichCluster(distanceMetric, distanceCutoff, mergeStrategy, membershipCutoff, termNameColumn, geneIDColumn, PvalueColumn));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_RichStudio_RichCluster", (DL_FUNC) &_RichStudio_RichCluster, 5},
+    {"_RichStudio_RichCluster", (DL_FUNC) &_RichStudio_RichCluster, 7},
     {NULL, NULL, 0}
 };
 
