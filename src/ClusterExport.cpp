@@ -25,9 +25,12 @@ Rcpp::List RichCluster(std::string distanceMetric, double distanceCutoff,
   */
   MergeStrategy MS("DAVID", 0.5, "DAVID", membershipCutoff);
   CM.filterSeeds(MS);
+  Rcpp::DataFrame FilteredSeedMap = CM.exportR_SeedMap();
+  CM.mergeSeeds(MS);
   return Rcpp::List::create(
     Rcpp::_["DistanceMatrix"] = CM.exportR_DistanceMatrix(),
     Rcpp::_["SeedMap"] = CM.exportR_SeedMap(),
-    Rcpp::_["FilteredSeeds"] = CM.exportR_ClusterList()
+    Rcpp::_["FilteredSeeds"] = FilteredSeedMap,
+    Rcpp::_["MergedSeeds"] = CM.exportR_ClusterList()
   );
 }

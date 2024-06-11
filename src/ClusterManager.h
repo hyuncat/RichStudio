@@ -20,7 +20,7 @@ public:
   
   void calculateDistanceScores(DistanceMetric distanceMetric);
   void filterSeeds(MergeStrategy mergeStrategy);
-  // void mergeTerms (soon)
+  void mergeSeeds(MergeStrategy mergeStrategy);
   
   Rcpp::NumericMatrix exportR_DistanceMatrix() {
     return distanceMatrix.export_RMatrix();

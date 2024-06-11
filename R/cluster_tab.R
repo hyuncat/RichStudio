@@ -52,11 +52,11 @@ clusterTabUI <- function(id, tabName) {
           DT::DTOutput(ns('clusterMap_table'))
         ),
         tabPanel(title="FilteredSeeds",
-          p("Some logic is off here..."),
+          p("Yay..."),
           DT::DTOutput(ns('InitialSeeds_table'))
         ),
-        tabPanel(title="MergeSeeds",
-          p("Some logic is DEFINITELY off here..."),
+        tabPanel(title="MergedSeeds",
+          p("Yay..."),
           DT::DTOutput(ns('MergeSeeds_table'))
         )
       ))
@@ -161,7 +161,7 @@ clusterTabServer <- function(id, u_degnames, u_degdfs, u_rrnames, u_rrdfs, u_big
     )
 
     MergeSeeds_toTable <- reactive({
-      clus_intermed[['MergeSeeds']]
+      clus_intermed[['MergedSeeds']]
     })
     output$MergeSeeds_table = DT::renderDT(
       MergeSeeds_toTable()

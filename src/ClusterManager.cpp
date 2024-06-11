@@ -6,32 +6,6 @@
 #include "DistanceMetric.h"
 #include <stdexcept>
 
-/* old bad way
-ClusterManager::ClusterManager(Rcpp::CharacterVector termNameColumn,
-                               Rcpp::CharacterVector geneIDColumn,
-                               Rcpp::NumericVector PvalueColumn)
-  // Store as C++ vectors
-  : _termNames(
-    Rcpp::as<std::vector<std::string>>(termNameColumn)
-  ),
-  _geneIDstrings(
-    Rcpp::as<std::vector<std::string>>(geneIDColumn)
-  ),
-  _Pvalues(
-    Rcpp::as<std::vector<double>>(PvalueColumn)
-  ),
-  // Initialize distanceMatrix and seedMap with vector info
-  _nterms(_termNames.size()),
-  distanceMatrix(_nterms, _termNames),
-  seedMap(&_termNames, &_geneIDstrings, &_Pvalues)
-{
-  // Ensure all vectors are of the same size
-  if (_termNames.size() != _geneIDstrings.size() || _termNames.size() != _Pvalues.size()) {
-    throw std::invalid_argument("All input columns must have the same size.");
-  }
-}
-*/
-
 // new way with initializing ClusterList and filteringSeeds separately
 ClusterManager::ClusterManager(Rcpp::CharacterVector termNameColumn,
                                Rcpp::CharacterVector geneIDColumn,
@@ -91,4 +65,8 @@ void ClusterManager::calculateDistanceScores(DistanceMetric distanceMetric) {
 
 void ClusterManager::filterSeeds(MergeStrategy mergeStrategy) {
   clusterList.filterSeeds(mergeStrategy);
+}
+
+void ClusterManager::mergeSeeds(MergeStrategy mergeStrategy) {
+  clusterList.mergeClusters(mergeStrategy);
 }
