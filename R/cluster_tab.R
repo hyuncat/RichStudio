@@ -108,16 +108,21 @@ clusterTabServer <- function(id, u_degnames, u_degdfs, u_rrnames, u_rrdfs, u_big
       req(input$cluster_name) # Require cluster name
 
       withProgress(message="Clustering...", value=0, {
+        selected_rrs <- as.vector(input$selected_rrs)
         genesets <- list()
         gs_names <- c()
-        for (i in seq_along(input$selected_rrs)) {
-          tmp <- input$selected_rrs[i]
+        for (i in seq_along(selected_rrs)) {
+          tmp <- selected_rrs[i]
           genesets <- c(genesets, list(u_rrdfs[[tmp]]))
         }
-        names(genesets) <- input$selected_rrs
+        names(genesets) <- selected_rrs
         gs_names <- names(genesets)
-
-        merged_gs <- merge_genesets(genesets)
+        
+        if (length(selected_rrs) != 1){
+          merged_gs <- merge_genesets(genesets)
+        } else {
+          merged_gs <- genesets[[1]]
+        }
         incProgress(0.2, message=NULL, "Done merging")
         cluster_intermediate_tmp <- tryCatch(
           RichStudio::RichCluster(input$similarity_metric, input$similarity_cutoff,

@@ -1,4 +1,3 @@
-
 clusVisTabUI <- function(id, tabName) {
   ns <- NS(id)
   tabItem(tabName = tabName,
